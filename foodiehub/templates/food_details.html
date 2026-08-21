@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ food['name'] }} - FoodieHub{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:30px;">
+  <div class="food-detail-grid">
+    <div class="food-detail-img">
+      <img src="{{ food['image_url'] }}" alt="{{ food['name'] }}"
+           onerror="this.onerror=null;this.src='https://loremflickr.com/480/360/food,dish';">
+    </div>
+    <div class="food-detail-info">
+      <span class="food-type-badge {{ food['food_type'] }}" style="display:inline-flex;"></span>
+      <h1>{{ food['name'] }}</h1>
+      <div style="color:#8a8a8a; font-size:0.95rem;">
+        from <a href="{{ url_for('restaurant_detail', restaurant_id=food['restaurant_id_ref']) }}" style="color:#ff5722; font-weight:600;">{{ food['restaurant_name'] }}</a>
+      </div>
+      <p style="margin-top:14px; color:#4a4a4a;">{{ food['description'] }}</p>
+
+      <div class="ingredient-tags">
+        <span>⭐ {{ food['rating'] }} Rating</span>
+        <span>{{ food['food_type']|replace('_',' ')|title }}</span>
+      </div>
+
+      <div class="price-lg">₹{{ '%.0f'|format(food['price']) }}</div>
+
+      <div class="detail-actions">
+        <div class="qty-control" style="max-width:150px;" id="detailQtyControl">
+          <button type="button" onclick="changeDetailQty(-1)">−</button>
+          <span class="qty-val" id="detailQtyVal">1</span>
+          <button type="button" onclick="changeDetailQty(1)">+</button>
+        </div>
+        <button class="btn btn-primary" onclick="addToCartFromDetail({{ food['id'] }})">Add to Cart</button>
+        <button class="btn btn-outline" onclick="orderNow({{ food['id'] }})">Order Now</button>
+        <button class="icon-btn" onclick="toggleFavorite({{ food['id'] }}, this)" title="Add to favorites" style="font-size:1.6rem;">🤍</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let detailQty = 1;
+function changeDetailQty(delta) {
+  detailQty = Math.max(1, detailQty + delta);
+  document.getElementById('detailQtyVal').textContent = detailQty;
+}
+function addToCartFromDetail(foodId) {
+  addToCartWithQty(foodId, detailQty);
+}
+function orderNow(foodId) {
+  addToCartWithQty(foodId, detailQty, function() {
+    window.location.href = "{{ url_for('checkout') }}";
+  });
+}
+</script>
+{% endblock %}

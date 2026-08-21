@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Recommended For You - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container">
+    <span class="ai-badge" style="background:rgba(255,255,255,0.25);">🤖 AI Powered</span>
+    <h1>Recommended For You</h1>
+    <p>
+      {% if rec_type == 'personalized' %}
+        Based on your order history and taste preferences
+      {% else %}
+        Popular picks to get you started — order a few times and we'll personalize this for you!
+      {% endif %}
+    </p>
+  </div>
+</div>
+<div class="container">
+
+  <section class="section" style="padding-top:0;">
+    <div class="section-header"><h2>🤖 Recommended For You</h2></div>
+    <div class="food-grid">
+      {% for item in recommended %}
+        {% include "_food_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if because_category and because_items %}
+  <section class="section">
+    <div class="section-header"><h2>❤️ Because You Ordered {{ because_category['name'] }}...</h2></div>
+    <div class="food-grid">
+      {% for item in because_items %}
+        {% include "_food_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section">
+    <div class="section-header"><h2>🔥 Popular Near You</h2></div>
+    <div class="food-grid">
+      {% for item in popular %}
+        {% include "_food_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Order Placed - FoodieHub{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="success-wrap">
+    <div class="success-check">✓</div>
+    <h1 style="font-size:1.8rem; font-weight:800;">🎉 Order Placed Successfully!</h1>
+    <p style="color:#8a8a8a; margin-top:8px;">Your delicious food is on its way. Estimated delivery: 35-45 minutes.</p>
+
+    <div class="order-summary-box">
+      <div class="row"><span>Order ID</span><strong>#{{ '%04d'|format(order['id']) }}</strong></div>
+      <div class="row"><span>Restaurant</span><strong>{{ order['restaurant_name'] }}</strong></div>
+      <div class="row"><span>Items</span><strong>{{ items|length }} item(s)</strong></div>
+      <div class="row"><span>Total Amount</span><strong>₹{{ '%.2f'|format(order['total_amount']) }}</strong></div>
+      <div class="row"><span>Delivery Address</span><strong style="text-align:right; max-width:220px;">{{ order['delivery_address'] }}</strong></div>
+      <div class="row"><span>Payment Method</span><strong>{{ order['payment_method']|upper }}</strong></div>
+      <div class="row"><span>Status</span><span class="status-badge status-placed">{{ order['status'] }}</span></div>
+    </div>
+
+    <div style="margin-top:14px; text-align:left;">
+      {% for item in items %}
+      <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:0.88rem; color:#4a4a4a;">
+        <span>{{ item['name'] }} x{{ item['quantity'] }}</span>
+        <span>₹{{ '%.0f'|format(item['price'] * item['quantity']) }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="display:flex; gap:14px; justify-content:center; margin-top:30px; flex-wrap:wrap;">
+      <a href="{{ url_for('order_detail', order_id=order['id']) }}" class="btn btn-outline">Track Order</a>
+      <a href="{{ url_for('home') }}" class="btn btn-primary">Order More Food</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

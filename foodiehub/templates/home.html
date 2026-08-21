@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Home - FoodieHub{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-text">
+      <h1>What are you craving today? 😋</h1>
+      <p>Order from {{ restaurants|length }}+ handpicked restaurants, delivered fresh and fast.</p>
+      <form class="hero-search" action="{{ url_for('search') }}" method="get">
+        <input type="text" name="q" placeholder="Search for food, restaurants or cuisines...">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+    <div class="hero-emojis">
+      <span>🍕</span><span>🍔</span><span>🍜</span><span>🍰</span>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+  <section class="section">
+    <div class="section-header">
+      <h2>Popular Categories</h2>
+      <a href="{{ url_for('categories') }}" class="view-all">View All Categories &rarr;</a>
+    </div>
+    <div class="category-grid">
+      {% for cat in categories %}
+      <a href="{{ url_for('category_detail', category_id=cat['id']) }}" class="category-card">
+        <div class="icon">{{ cat['icon'] }}</div>
+        <div class="name">{{ cat['name'] }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>Restaurants Near You</h2>
+      <a href="{{ url_for('restaurants') }}" class="view-all">View All &rarr;</a>
+    </div>
+    <div class="restaurant-grid">
+      {% for r in restaurants %}
+        {% include "_restaurant_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <span class="ai-badge">🤖 AI Powered</span>
+        <h2>Recommended For You</h2>
+      </div>
+      <a href="{{ url_for('recommendations') }}" class="view-all">See More &rarr;</a>
+    </div>
+    <div class="food-grid">
+      {% for item in recommended[:8] %}
+        {% include "_food_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>🔥 Popular Near You</h2>
+    </div>
+    <div class="food-grid">
+      {% for item in popular %}
+        {% include "_food_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

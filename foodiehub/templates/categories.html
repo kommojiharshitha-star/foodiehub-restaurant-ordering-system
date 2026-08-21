@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Categories - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container">
+    <h1>🍕 All Categories</h1>
+    <p>Browse {{ categories|length }} delicious food categories</p>
+  </div>
+</div>
+<div class="container">
+  <div class="category-grid" style="margin-bottom:40px;">
+    {% for cat in categories %}
+    <a href="{{ url_for('category_detail', category_id=cat['id']) }}" class="category-card">
+      <div class="icon">{{ cat['icon'] }}</div>
+      <div class="name">{{ cat['name'] }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

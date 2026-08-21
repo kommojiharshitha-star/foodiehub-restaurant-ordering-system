@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Verify OTP - FoodieHub{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-logo">🔐</div>
+    <h1>Verify OTP</h1>
+    <p class="subtitle">We've sent a 6-digit code to <strong>+91 {{ phone }}</strong></p>
+
+    <div class="otp-demo-box">
+      💡 This is a demo app — no real SMS is sent. Check the notification banner above for your OTP.
+    </div>
+
+    <form action="{{ url_for('verify_otp') }}" method="POST" id="otpForm">
+      <div class="form-group">
+        <label>Enter OTP</label>
+        <input type="text" name="otp" id="otpInput" maxlength="6" inputmode="numeric" placeholder="6-digit OTP" required autofocus
+          style="letter-spacing: 8px; font-size:1.3rem; text-align:center; font-weight:700;">
+      </div>
+      <div class="otp-timer" id="otpTimer">OTP expires in <span id="timerValue">05:00</span></div>
+      <button type="submit" class="btn btn-primary btn-block">Verify OTP</button>
+    </form>
+
+    <div class="resend-link">
+      Didn't receive the code?
+      <form action="{{ url_for('resend_otp') }}" method="POST" style="display:inline;">
+        <button type="submit">Resend OTP</button>
+      </form>
+    </div>
+    <div class="back-link"><a href="{{ url_for('login') }}">&larr; Change mobile number</a></div>
+  </div>
+</div>
+
+<script>
+  // Simple client-side countdown for UX; server independently enforces real expiry.
+  let seconds = 300;
+  const timerEl = document.getElementById('timerValue');
+  const interval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(interval);
+      timerEl.textContent = '00:00';
+      document.getElementById('otpTimer').innerHTML = 'OTP expired. Please resend.';
+      return;
+    }
+    const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    timerEl.textContent = `${m}:${s}`;
+  }, 1000);
+</script>
+{% endblock %}

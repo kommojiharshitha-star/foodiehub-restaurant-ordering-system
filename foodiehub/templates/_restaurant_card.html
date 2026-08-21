@@ -1,0 +1,17 @@
+{# Expects: r (restaurant row) #}
+<a href="{{ url_for('restaurant_detail', restaurant_id=r['id']) }}" class="restaurant-card">
+  <div class="img-wrap">
+    <img src="{{ r['image'] }}" alt="{{ r['name'] }}" loading="lazy"
+         onerror="this.onerror=null;this.src='https://loremflickr.com/480/360/restaurant,food';">
+    <span class="rating-pill">⭐ {{ r['rating'] }}</span>
+    {% if r['veg_only'] %}<span class="veg-pill">🟢 Pure Veg</span>{% endif %}
+  </div>
+  <div class="info">
+    <h3>{{ r['name'] }}</h3>
+    <div style="font-size:0.85rem; color:#8a8a8a;">{{ r['cuisine'] }}</div>
+    <div class="meta">
+      <span>📍 {{ r['location'] }}</span>
+      <span>⏱️ {{ r['delivery_time'] }}</span>
+    </div>
+  </div>
+</a>

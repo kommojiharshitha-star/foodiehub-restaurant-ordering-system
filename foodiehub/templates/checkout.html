@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Checkout - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container"><h1>💳 Checkout</h1><p>Review your order and complete payment</p></div>
+</div>
+<div class="container">
+  <form action="{{ url_for('place_order') }}" method="POST" id="checkoutForm">
+    <div class="cart-layout">
+      <div>
+        <div class="panel" style="margin-bottom:20px;">
+          <h3 style="margin-bottom:16px;">Delivery Details</h3>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" value="{{ user['name'] if user else '' }}" required>
+          </div>
+          <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="tel" name="phone" value="{{ user['phone'] if user else '' }}" maxlength="10" required>
+          </div>
+          <div class="form-group">
+            <label>Delivery Address</label>
+            <textarea name="address" rows="2" placeholder="House no, street, landmark" required>{{ user['address'] if user else '' }}</textarea>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" name="city" value="{{ user['city'] if user else '' }}" required>
+            </div>
+            <div class="form-group">
+              <label>Pincode</label>
+              <input type="text" name="pincode" value="{{ user['pincode'] if user else '' }}" maxlength="6" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin-bottom:16px;">Payment Method</h3>
+          <div class="payment-options">
+            <label class="payment-option selected">
+              <input type="radio" name="payment_method" value="cod" checked onclick="selectPayment(this)">
+              <span class="emoji">💵</span> Cash on Delivery
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="upi" onclick="selectPayment(this)">
+              <span class="emoji">📱</span> Demo UPI Payment
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="card" onclick="selectPayment(this)">
+              <span class="emoji">💳</span> Demo Card Payment
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <h3>Order Summary</h3>
+        {% for item in items %}
+        <div class="summary-row"><span>{{ item['name'] }} x{{ item['quantity'] }}</span><span>₹{{ '%.0f'|format(item['price'] * item['quantity']) }}</span></div>
+        {% endfor %}
+        <hr style="border:none; border-top:1px dashed #dcdcdc; margin:12px 0;">
+        <div class="summary-row"><span>Subtotal</span><span>₹{{ '%.2f'|format(totals['subtotal']) }}</span></div>
+        <div class="summary-row"><span>Delivery Fee</span><span>₹{{ '%.2f'|format(totals['delivery_fee']) }}</span></div>
+        <div class="summary-row"><span>Taxes (5%)</span><span>₹{{ '%.2f'|format(totals['tax']) }}</span></div>
+        <div class="summary-row"><span>Discount</span><span class="discount-val">-₹{{ '%.2f'|format(totals['discount']) }}</span></div>
+        <div class="summary-row total"><span>Grand Total</span><span>₹{{ '%.2f'|format(totals['grand_total']) }}</span></div>
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:18px;">Place Order 🎉</button>
+      </div>
+    </div>
+  </form>
+</div>
+<script>
+function selectPayment(input) {
+  document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+  input.closest('.payment-option').classList.add('selected');
+}
+</script>
+{% endblock %}

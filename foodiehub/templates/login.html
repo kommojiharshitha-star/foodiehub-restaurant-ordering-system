@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Login - FoodieHub{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-logo">🍽️</div>
+    <h1>Welcome to FoodieHub</h1>
+    <p class="subtitle">Login with your mobile number to order delicious food 😋</p>
+
+    <form action="{{ url_for('generate_otp') }}" method="POST">
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <div class="input-prefix">
+          <span>+91</span>
+          <input type="tel" name="phone" maxlength="10" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number" required autofocus>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Generate OTP</button>
+    </form>
+
+    <p class="back-link" style="margin-top:20px; color:#8a8a8a;">
+      By continuing, you agree to FoodieHub's demo Terms & Privacy Policy.
+    </p>
+  </div>
+</div>
+{% endblock %}

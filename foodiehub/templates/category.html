@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ category['name'] }} - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container">
+    <h1>{{ category['icon'] }} {{ category['name'] }}</h1>
+    <p>{{ items|length }} dishes available</p>
+  </div>
+</div>
+<div class="container">
+  <div class="filter-bar">
+    <a href="{{ url_for('category_detail', category_id=category['id']) }}" class="filter-chip {{ 'active' if active_filter=='all' }}">All</a>
+    <a href="{{ url_for('category_detail', category_id=category['id'], type='veg') }}" class="filter-chip {{ 'active' if active_filter=='veg' }}"><span class="dot dot-veg"></span>Veg</a>
+    <a href="{{ url_for('category_detail', category_id=category['id'], type='non_veg') }}" class="filter-chip {{ 'active' if active_filter=='non_veg' }}"><span class="dot dot-non_veg"></span>Non-Veg</a>
+    <a href="{{ url_for('category_detail', category_id=category['id'], type='egg') }}" class="filter-chip {{ 'active' if active_filter=='egg' }}"><span class="dot dot-egg"></span>Egg</a>
+  </div>
+
+  {% if items %}
+  <div class="food-grid" style="margin-bottom:40px;">
+    {% for item in items %}
+      {% include "_food_card.html" %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="emoji">🍽️</div>
+    <h3>No items found</h3>
+    <p>Try a different filter or check back later.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

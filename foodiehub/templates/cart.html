@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Your Cart - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container"><h1>🛒 Your Cart</h1><p>{{ items|length }} item(s) in your cart</p></div>
+</div>
+<div class="container">
+  {% if not items %}
+    <div class="empty-state">
+      <div class="emoji">🛒</div>
+      <h3>Your cart is empty</h3>
+      <p>Looks like you haven't added anything yet. Let's fix that!</p>
+      <a href="{{ url_for('home') }}" class="btn btn-primary">Browse Restaurants</a>
+    </div>
+  {% else %}
+    {% if multi_restaurant_warning %}
+      <div class="flash flash-error" style="position:static; margin-bottom:20px; max-width:none;">
+        ⚠️ Your cart has items from multiple restaurants. Please remove items so all items are from one restaurant to checkout.
+      </div>
+    {% endif %}
+    <div class="cart-layout">
+      <div id="cartItemsList">
+        {% for item in items %}
+        <div class="cart-item-row" data-cart-id="{{ item['cart_id'] }}" data-price="{{ item['price'] }}">
+          <img src="{{ item['image_url'] }}" alt="{{ item['name'] }}" onerror="this.onerror=null;this.src='https://loremflickr.com/480/360/food,dish';">
+          <div class="cart-item-info">
+            <h4>{{ item['name'] }}</h4>
+            <div class="restaurant-tag">{{ item['restaurant_name'] }}</div>
+            <div class="price">₹{{ '%.0f'|format(item['price']) }}</div>
+          </div>
+          <div class="qty-control">
+            <button type="button" onclick="updateCartQty({{ item['cart_id'] }}, -1)">−</button>
+            <span class="qty-val" id="qty-{{ item['cart_id'] }}">{{ item['quantity'] }}</span>
+            <button type="button" onclick="updateCartQty({{ item['cart_id'] }}, 1)">+</button>
+          </div>
+          <button class="remove-btn" onclick="removeCartItem({{ item['cart_id'] }})">Remove</button>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="summary-box">
+        <h3>Order Summary</h3>
+        <div class="summary-row"><span>Subtotal</span><span id="sumSubtotal">₹{{ '%.2f'|format(totals['subtotal']) }}</span></div>
+        <div class="summary-row"><span>Delivery Fee</span><span id="sumDelivery">₹{{ '%.2f'|format(totals['delivery_fee']) }}</span></div>
+        <div class="summary-row"><span>Taxes (5%)</span><span id="sumTax">₹{{ '%.2f'|format(totals['tax']) }}</span></div>
+        <div class="summary-row"><span>Discount</span><span class="discount-val" id="sumDiscount">-₹{{ '%.2f'|format(totals['discount']) }}</span></div>
+        <div class="summary-row total"><span>Grand Total</span><span id="sumTotal">₹{{ '%.2f'|format(totals['grand_total']) }}</span></div>
+        <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-block" style="margin-top:18px;" id="checkoutBtn">Proceed to Checkout</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+{% endblock %}

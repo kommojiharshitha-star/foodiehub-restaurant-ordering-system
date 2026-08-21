@@ -1,0 +1,20 @@
+{# Expects: item (food row, may have restaurant_name) #}
+<div class="food-card" data-food-id="{{ item['id'] }}">
+  <div class="img-wrap" onclick="window.location.href='{{ url_for('food_details', food_id=item['id']) }}'">
+    <img src="{{ item['image_url'] }}" alt="{{ item['name'] }}" loading="lazy"
+         onerror="this.onerror=null;this.src='https://loremflickr.com/480/360/food,dish';">
+    <span class="food-type-badge {{ item['food_type'] }}" title="{{ item['food_type'] }}"></span>
+  </div>
+  <div class="body">
+    {% if item['restaurant_name'] %}
+      <div class="restaurant-tag">{{ item['restaurant_name'] }}</div>
+    {% endif %}
+    <h4 onclick="window.location.href='{{ url_for('food_details', food_id=item['id']) }}'">{{ item['name'] }}</h4>
+    <div class="desc">{{ item['description']|truncate(55) }}</div>
+    <div class="meta-row">
+      <span class="rating">⭐ {{ item['rating'] }}</span>
+      <span class="price">₹{{ '%.0f'|format(item['price']) }}</span>
+    </div>
+    <button class="add-btn" onclick="addToCart({{ item['id'] }}, this)">+ Add to Cart</button>
+  </div>
+</div>
