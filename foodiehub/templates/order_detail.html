@@ -1,0 +1,71 @@
+
+{% extends "base.html" %}
+{% block title %}Track Order - FoodieHub{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-banner">
+    <h1>Track Your Order</h1>
+    <p>Order #{{ '%04d'|format(order['id']) }}</p>
+  </div>
+
+  <div class="panel" style="text-align:center; margin-bottom:20px;">
+    <h2 style="color:#8b5cf6;">Estimated Delivery</h2>
+    <div style="font-size:2.2rem; font-weight:800; margin:10px 0;">35–45 min</div>
+    <p style="color:#777;">Your delicious food is on its way!</p>
+  </div>
+
+  <div class="panel" style="margin-bottom:20px;">
+    <h3 style="margin-bottom:20px;">Delivery Progress</h3>
+
+    {% set status = order['status'] %}
+    {% set steps = ['Order Placed', 'Preparing', 'Out for Delivery', 'Delivered'] %}
+
+    {% for step in steps %}
+      {% if step == status %}
+        {% set active = true %}
+      {% else %}
+        {% set active = false %}
+      {% endif %}
+
+      <div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid #eee;">
+        <div style="width:42px; height:42px; border-radius:50%; background:{% if active %}#8b5cf6{% else %}#eee{% endif %}; color:{% if active %}white{% else %}#999{% endif %}; display:flex; align-items:center; justify-content:center; font-weight:800;">
+          {% if active %}✓{% else %}{{ loop.index }}{% endif %}
+        </div>
+        <div style="flex:1;">
+          <strong>{{ step }}</strong>
+          {% if active %}
+            <p style="margin:4px 0 0; color:#8b5cf6; font-size:.85rem;">Current status</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="panel" style="margin-bottom:20px;">
+    <h3>Order Details</h3>
+    <p style="margin-top:12px;"><strong>Restaurant:</strong> {{ order['restaurant_name'] }}</p>
+    <p><strong>Delivery Address:</strong> {{ order['delivery_address'] }}</p>
+    <p><strong>Payment:</strong> {{ order['payment_method']|upper }}</p>
+    <p><strong>Total:</strong> ₹{{ '%.2f'|format(order['total_amount']) }}</p>
+  </div>
+
+  <div class="panel">
+    <h3>Your Food Items</h3>
+    {% for item in items %}
+      <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid #eee;">
+        <img src="{{ item['image_url'] }}" alt="{{ item['name'] }}" style="width:70px; height:70px; object-fit:cover; border-radius:12px;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';">
+        <div style="flex:1;">
+          <strong>{{ item['name'] }}</strong>
+          <p style="margin:4px 0; color:#777;">Quantity: {{ item['quantity'] }}</p>
+        </div>
+        <strong>₹{{ '%.0f'|format(item['price'] * item['quantity']) }}</strong>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div style="text-align:center; margin-top:24px;">
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Order More Food</a>
+    <a href="{{ url_for('orders') }}" class="btn btn-outline">My Orders</a>
+  </div>
+</div>
+{% endblock %}

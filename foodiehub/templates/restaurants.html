@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Restaurants - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container">
+    <h1>🏪 All Restaurants</h1>
+    <p>{{ restaurants|length }} restaurants ready to serve you</p>
+  </div>
+</div>
+<div class="container">
+  <div class="restaurant-grid" style="margin-bottom:40px;">
+    {% for r in restaurants %}
+      {% include "_restaurant_card.html" %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

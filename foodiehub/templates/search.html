@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Search - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container">
+    <h1>🔍 Search</h1>
+    <form action="{{ url_for('search') }}" method="get" style="margin-top:16px; max-width:500px;">
+      <div class="hero-search" style="background:rgba(255,255,255,0.95);">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search for food, restaurants or cuisines..." autofocus>
+        <button type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="container">
+  {% if not query %}
+    <div class="empty-state">
+      <div class="emoji">🔍</div>
+      <h3>Search for anything delicious</h3>
+      <p>Try "biryani", "pizza", or a restaurant name</p>
+    </div>
+  {% elif not foods and not restaurants %}
+    <div class="empty-state">
+      <div class="emoji">😕</div>
+      <h3>No results for "{{ query }}"</h3>
+      <p>Try a different search term</p>
+    </div>
+  {% else %}
+    {% if restaurants %}
+    <section class="section" style="padding-top:0;">
+      <div class="section-header"><h2>Restaurants ({{ restaurants|length }})</h2></div>
+      <div class="restaurant-grid">
+        {% for r in restaurants %}
+          {% include "_restaurant_card.html" %}
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if foods %}
+    <section class="section" style="padding-top:0;">
+      <div class="section-header"><h2>Dishes ({{ foods|length }})</h2></div>
+      <div class="food-grid">
+        {% for item in foods %}
+          {% include "_food_card.html" %}
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

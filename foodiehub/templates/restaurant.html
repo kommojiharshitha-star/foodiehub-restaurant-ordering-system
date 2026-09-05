@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ restaurant['name'] }} - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container">
+    <h1>{{ restaurant['name'] }}</h1>
+    <p>{{ restaurant['cuisine'] }} &nbsp;•&nbsp; 📍 {{ restaurant['location'] }} &nbsp;•&nbsp; ⭐ {{ restaurant['rating'] }} &nbsp;•&nbsp; ⏱️ {{ restaurant['delivery_time'] }}</p>
+  </div>
+</div>
+<div class="container">
+  <div class="filter-bar">
+    <a href="{{ url_for('restaurant_detail', restaurant_id=restaurant['id']) }}" class="filter-chip {{ 'active' if active_filter=='all' }}">All</a>
+    <a href="{{ url_for('restaurant_detail', restaurant_id=restaurant['id'], type='veg') }}" class="filter-chip {{ 'active' if active_filter=='veg' }}"><span class="dot dot-veg"></span>Veg</a>
+    <a href="{{ url_for('restaurant_detail', restaurant_id=restaurant['id'], type='non_veg') }}" class="filter-chip {{ 'active' if active_filter=='non_veg' }}"><span class="dot dot-non_veg"></span>Non-Veg</a>
+    <a href="{{ url_for('restaurant_detail', restaurant_id=restaurant['id'], type='egg') }}" class="filter-chip {{ 'active' if active_filter=='egg' }}"><span class="dot dot-egg"></span>Egg</a>
+  </div>
+
+  {% if grouped_menu %}
+    {% for category_name, items in grouped_menu.items() %}
+    <section class="section" style="padding-top:0;">
+      <div class="section-header"><h2>{{ category_name }}</h2></div>
+      <div class="food-grid">
+        {% for item in items %}
+          {% include "_food_card.html" %}
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="emoji">🍽️</div>
+      <h3>No items match this filter</h3>
+      <p>Try a different filter to see more dishes.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

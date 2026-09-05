@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}FoodieHub{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% if logged_in_user %}
+<nav class="navbar">
+  <div class="container">
+    <a href="{{ url_for('home') }}" class="logo">🍽️ FoodieHub</a>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('home') }}" class="{{ 'active' if request.endpoint=='home' }}">Home</a></li>
+      <li><a href="{{ url_for('restaurants') }}" class="{{ 'active' if request.endpoint in ['restaurants','restaurant_detail'] }}">Restaurants</a></li>
+      <li><a href="{{ url_for('categories') }}" class="{{ 'active' if request.endpoint in ['categories','category_detail'] }}">Categories</a></li>
+      <li><a href="{{ url_for('recommendations') }}" class="{{ 'active' if request.endpoint=='recommendations' }}">For You</a></li>
+      <li><a href="{{ url_for('orders') }}" class="{{ 'active' if request.endpoint in ['orders','order_detail'] }}">Orders</a></li>
+    </ul>
+    <form class="nav-search" action="{{ url_for('search') }}" method="get">
+      <span class="icon">🔍</span>
+      <input type="text" name="q" placeholder="Search for food, restaurants..." value="{{ request.args.get('q','') }}">
+    </form>
+    <div class="nav-actions">
+      <a href="{{ url_for('cart') }}" class="icon-btn" title="Cart">
+        🛒
+        {% if cart_count and cart_count > 0 %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+      </a>
+      <a href="{{ url_for('profile') }}" class="avatar-circle" title="Profile">{{ logged_in_user['name'][0]|upper }}</a>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<div class="flash-container" id="flashContainer">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+{% if logged_in_user %}
+<footer class="footer">
+  <div class="container">
+    <div>
+      <h4>🍽️ FoodieHub</h4>
+      <p>Your favourite food, delivered fast.<br>A demo project — not a real ordering service.</p>
+    </div>
+    <div>
+      <h4>Explore</h4>
+      <p><a href="{{ url_for('restaurants') }}">Restaurants</a></p>
+      <p><a href="{{ url_for('categories') }}">Categories</a></p>
+      <p><a href="{{ url_for('recommendations') }}">Recommended For You</a></p>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <p><a href="{{ url_for('orders') }}">Order History</a></p>
+      <p><a href="{{ url_for('profile') }}">Profile</a></p>
+      <p><a href="{{ url_for('logout') }}">Logout</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 FoodieHub — Demo project for educational purposes.</div>
+</footer>
+
+<nav class="bottom-nav">
+  <ul>
+    <li><a href="{{ url_for('home') }}" class="{{ 'active' if request.endpoint=='home' }}"><span class="icon">🏠</span>Home</a></li>
+    <li><a href="{{ url_for('restaurants') }}" class="{{ 'active' if request.endpoint in ['restaurants','restaurant_detail'] }}"><span class="icon">🏪</span>Restaurants</a></li>
+    <li><a href="{{ url_for('search') }}" class="{{ 'active' if request.endpoint=='search' }}"><span class="icon">🔍</span>Search</a></li>
+    <li><a href="{{ url_for('cart') }}" class="{{ 'active' if request.endpoint=='cart' }}" style="position:relative;"><span class="icon">🛒</span>Cart
+      {% if cart_count and cart_count > 0 %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+    </a></li>
+    <li><a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint=='profile' }}"><span class="icon">👤</span>Profile</a></li>
+  </ul>
+</nav>
+{% endif %}
+
+<div class="toast" id="toast"></div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

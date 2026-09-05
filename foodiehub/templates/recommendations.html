@@ -1,0 +1,23 @@
+<div class="recommendation-image">
+
+  {% if item.get('image') or item.get('image_url') %}
+
+    <img
+      src="{{ item.get('image') or item.get('image_url') }}"
+      alt="{{ item.get('name', 'Food') }}"
+      onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"
+    >
+
+    <div class="image-fallback">
+      🍽️
+    </div>
+
+  {% else %}
+
+    <div class="image-fallback">
+      🍽️
+    </div>
+
+  {% endif %}
+
+</div>

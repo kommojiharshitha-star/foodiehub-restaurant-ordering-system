@@ -1,0 +1,734 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - FoodieHub{% endblock %}
+
+{% block content %}
+
+<style>
+  .delivery-panel {
+    margin-bottom: 20px;
+  }
+
+  .delivery-title {
+    margin-bottom: 16px;
+  }
+
+  .address-card {
+    border: 1px solid #eadff2;
+    border-radius: 14px;
+    padding: 16px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .address-card:hover {
+    border-color: #ff4f9a;
+    box-shadow: 0 6px 18px rgba(255, 79, 154, 0.12);
+  }
+
+  .address-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .location-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff0f7;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .address-card-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .address-card-content strong {
+    display: block;
+    color: #28202f;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .address-card-content p {
+    margin: 5px 0 0;
+    color: #777;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .change-address {
+    margin-left: auto;
+    color: #ff3f91;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .address-selector {
+    display: none;
+    margin-top: 12px;
+    padding: 16px;
+    border: 1px solid #f0dce9;
+    border-radius: 14px;
+    background: #fff9fc;
+  }
+
+  .address-selector.active {
+    display: block;
+    animation: addressOpen 0.25s ease;
+  }
+
+  .address-selector .form-group {
+    margin-bottom: 14px;
+  }
+
+  .address-selector label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #403647;
+  }
+
+  .address-selector select,
+  .address-selector textarea,
+  .address-selector input {
+    width: 100%;
+    border: 1px solid #ded6e3;
+    border-radius: 10px;
+    padding: 12px;
+    background: #ffffff;
+    color: #302737;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .address-selector select:focus,
+  .address-selector textarea:focus,
+  .address-selector input:focus {
+    border-color: #ff4f9a;
+  }
+
+  .address-selector textarea {
+    resize: vertical;
+    min-height: 75px;
+  }
+
+  .address-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .address-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .address-buttons button {
+    flex: 1;
+  }
+
+  .btn-light {
+    border: 1px solid #eadce8;
+    background: #ffffff;
+    color: #555;
+  }
+
+  .btn-light:hover {
+    background: #f8f3f7;
+  }
+
+  @keyframes addressOpen {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .address-grid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .address-card {
+      padding: 13px;
+    }
+
+    .location-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 19px;
+    }
+
+    .address-card-content strong {
+      font-size: 14px;
+    }
+
+    .address-card-content p {
+      font-size: 12px;
+    }
+
+    .change-address {
+      font-size: 12px;
+    }
+  }
+</style>
+
+<div class="page-banner">
+  <div class="container">
+    <h1>💳 Checkout</h1>
+    <p>Review your order and complete payment</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <form
+    action="{{ url_for('place_order') }}"
+    method="POST"
+    id="checkoutForm"
+  >
+
+    <div class="cart-layout">
+
+      <!-- LEFT SIDE -->
+      <div>
+
+        <!-- DELIVERY DETAILS -->
+        <div class="panel delivery-panel">
+
+          <h3 class="delivery-title">Delivery Details</h3>
+
+          <div class="form-group">
+            <label>Full Name</label>
+
+            <input
+              type="text"
+              name="name"
+              value="{{ user['name'] if user else '' }}"
+              placeholder="Enter your full name"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Mobile Number</label>
+
+            <input
+              type="tel"
+              name="phone"
+              value="{{ user['phone'] if user else '' }}"
+              placeholder="Enter 10-digit mobile number"
+              maxlength="10"
+              pattern="[0-9]{10}"
+              required
+            >
+          </div>
+
+          <!-- EXISTING STYLE DELIVERY ADDRESS CARD -->
+          <div class="form-group">
+
+            <label>Delivery Address</label>
+
+            <div
+              class="address-card"
+              id="addressCard"
+              onclick="openAddressBox()"
+            >
+
+              <div class="address-card-top">
+
+                <div class="location-icon">📍</div>
+
+                <div class="address-card-content">
+
+                  <strong id="selectedCity">
+                    {{ user['city'] if user and user['city'] else 'Select City' }}
+                  </strong>
+
+                  <p id="selectedArea">
+                    {% if user and user['address'] %}
+                      {{ user['address'] }}
+                    {% else %}
+                      Choose your delivery location
+                    {% endif %}
+                  </p>
+
+                </div>
+
+                <span class="change-address">
+                  Change
+                </span>
+
+              </div>
+
+            </div>
+
+            <!-- ADDRESS SELECTOR -->
+            <div
+              class="address-selector"
+              id="addressSelector"
+            >
+
+              <div class="address-grid">
+
+                <div class="form-group">
+                  <label for="city">Select City</label>
+
+                  <select
+                    name="city"
+                    id="city"
+                    onchange="loadAreas()"
+                    required
+                  >
+                    <option value="">Select City</option>
+
+                    <option value="Vijayawada">
+                      Vijayawada
+                    </option>
+
+                    <option value="Guntur">
+                      Guntur
+                    </option>
+
+                    <option value="Hyderabad">
+                      Hyderabad
+                    </option>
+
+                    <option value="Bengaluru">
+                      Bengaluru
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="area">Select Area</label>
+
+                  <select
+                    id="area"
+                    onchange="updateAddressPreview()"
+                    required
+                  >
+                    <option value="">Select Area</option>
+                  </select>
+                </div>
+
+              </div>
+
+              <div class="form-group">
+                <label for="address">
+                  Full Delivery Address
+                </label>
+
+                <textarea
+                  name="address"
+                  id="address"
+                  rows="3"
+                  placeholder="House no, street, landmark"
+                  onchange="updateAddressPreview()"
+                  required
+                >{{ user['address'] if user else '' }}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="pincode">Pincode</label>
+
+                <input
+                  type="text"
+                  name="pincode"
+                  id="pincode"
+                  value="{{ user['pincode'] if user else '' }}"
+                  placeholder="Enter 6-digit pincode"
+                  maxlength="6"
+                  pattern="[0-9]{6}"
+                  required
+                >
+              </div>
+
+              <div class="address-buttons">
+
+                <button
+                  type="button"
+                  class="btn btn-light"
+                  onclick="closeAddressBox(event)"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onclick="saveAddress(event)"
+                >
+                  Save Address
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- PAYMENT METHOD -->
+        <div class="panel">
+
+          <h3 style="margin-bottom:16px;">
+            Payment Method
+          </h3>
+
+          <div class="payment-options">
+
+            <label class="payment-option selected">
+
+              <input
+                type="radio"
+                name="payment_method"
+                value="cod"
+                checked
+                onclick="selectPayment(this)"
+              >
+
+              <span class="emoji">💵</span>
+              Cash on Delivery
+
+            </label>
+
+            <label class="payment-option">
+
+              <input
+                type="radio"
+                name="payment_method"
+                value="upi"
+                onclick="selectPayment(this)"
+              >
+
+              <span class="emoji">📱</span>
+              Demo UPI Payment
+
+            </label>
+
+            <label class="payment-option">
+
+              <input
+                type="radio"
+                name="payment_method"
+                value="card"
+                onclick="selectPayment(this)"
+              >
+
+              <span class="emoji">💳</span>
+              Demo Card Payment
+
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE ORDER SUMMARY -->
+      <div class="summary-box">
+
+        <h3>Order Summary</h3>
+
+        {% for item in items %}
+
+        <div class="summary-row">
+
+          <span>
+            {{ item['name'] }} x{{ item['quantity'] }}
+          </span>
+
+          <span>
+            ₹{{ '%.0f'|format(item['price'] * item['quantity']) }}
+          </span>
+
+        </div>
+
+        {% endfor %}
+
+        <hr
+          style="
+            border:none;
+            border-top:1px dashed #dcdcdc;
+            margin:12px 0;
+          "
+        >
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>
+            ₹{{ '%.2f'|format(totals['subtotal']) }}
+          </span>
+        </div>
+
+        <div class="summary-row">
+          <span>Delivery Fee</span>
+          <span>
+            ₹{{ '%.2f'|format(totals['delivery_fee']) }}
+          </span>
+        </div>
+
+        <div class="summary-row">
+          <span>Taxes (5%)</span>
+          <span>
+            ₹{{ '%.2f'|format(totals['tax']) }}
+          </span>
+        </div>
+
+        <div class="summary-row">
+          <span>Discount</span>
+          <span class="discount-val">
+            -₹{{ '%.2f'|format(totals['discount']) }}
+          </span>
+        </div>
+
+        <div class="summary-row total">
+          <span>Grand Total</span>
+          <span>
+            ₹{{ '%.2f'|format(totals['grand_total']) }}
+          </span>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary btn-block"
+          style="margin-top:18px;"
+        >
+          Place Order 🎉
+        </button>
+
+      </div>
+
+    </div>
+
+  </form>
+
+</div>
+
+<script>
+  const areaData = {
+    Vijayawada: [
+      "Benz Circle",
+      "Governorpet",
+      "Patamata",
+      "Moghalrajpuram",
+      "Ramavarappadu",
+      "Poranki",
+      "Auto Nagar"
+    ],
+
+    Guntur: [
+      "Brodipet",
+      "Arundelpet",
+      "Lakshmipuram",
+      "Nallapadu",
+      "Amaravathi Road",
+      "Gorantla",
+      "Mangalagiri"
+    ],
+
+    Hyderabad: [
+      "Madhapur",
+      "Kukatpally",
+      "Gachibowli",
+      "Banjara Hills",
+      "Ameerpet",
+      "Hitech City",
+      "Miyapur"
+    ],
+
+    Bengaluru: [
+      "Whitefield",
+      "Electronic City",
+      "Marathahalli",
+      "Indiranagar",
+      "BTM Layout",
+      "Koramangala",
+      "Jayanagar"
+    ]
+  };
+
+  function openAddressBox() {
+    const addressSelector =
+      document.getElementById("addressSelector");
+
+    addressSelector.classList.add("active");
+  }
+
+  function closeAddressBox(event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    document
+      .getElementById("addressSelector")
+      .classList.remove("active");
+  }
+
+  function loadAreas() {
+    const city =
+      document.getElementById("city").value;
+
+    const area =
+      document.getElementById("area");
+
+    area.innerHTML =
+      '<option value="">Select Area</option>';
+
+    if (areaData[city]) {
+      areaData[city].forEach(function (areaName) {
+        const option =
+          document.createElement("option");
+
+        option.value = areaName;
+        option.textContent = areaName;
+
+        area.appendChild(option);
+      });
+    }
+
+    updateAddressPreview();
+  }
+
+  function updateAddressPreview() {
+    const city =
+      document.getElementById("city").value;
+
+    const area =
+      document.getElementById("area").value;
+
+    const address =
+      document.getElementById("address").value.trim();
+
+    document.getElementById("selectedCity").textContent =
+      city || "Select City";
+
+    if (address && area) {
+      document.getElementById("selectedArea").textContent =
+        area + " • " + address;
+    } else if (address) {
+      document.getElementById("selectedArea").textContent =
+        address;
+    } else if (area) {
+      document.getElementById("selectedArea").textContent =
+        area;
+    } else {
+      document.getElementById("selectedArea").textContent =
+        "Choose your delivery location";
+    }
+  }
+
+  function saveAddress(event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const city =
+      document.getElementById("city").value;
+
+    const area =
+      document.getElementById("area").value;
+
+    const address =
+      document.getElementById("address").value.trim();
+
+    const pincode =
+      document.getElementById("pincode").value.trim();
+
+    if (!city) {
+      alert("Please select your city.");
+      return;
+    }
+
+    if (!area) {
+      alert("Please select your area.");
+      return;
+    }
+
+    if (!address) {
+      alert("Please enter your full delivery address.");
+      return;
+    }
+
+    if (!/^[0-9]{6}$/.test(pincode)) {
+      alert("Please enter a valid 6-digit pincode.");
+      return;
+    }
+
+    document.getElementById("selectedCity").textContent =
+      city;
+
+    document.getElementById("selectedArea").textContent =
+      area + " • " + address;
+
+    document
+      .getElementById("addressSelector")
+      .classList.remove("active");
+  }
+
+  function selectPayment(input) {
+    document
+      .querySelectorAll(".payment-option")
+      .forEach(function (element) {
+        element.classList.remove("selected");
+      });
+
+    input
+      .closest(".payment-option")
+      .classList.add("selected");
+  }
+
+  document
+    .getElementById("checkoutForm")
+    .addEventListener("submit", function (event) {
+
+      const city =
+        document.getElementById("city").value;
+
+      const area =
+        document.getElementById("area").value;
+
+      const address =
+        document.getElementById("address").value.trim();
+
+      const pincode =
+        document.getElementById("pincode").value.trim();
+
+      if (!city || !area || !address || !pincode) {
+        event.preventDefault();
+
+        alert(
+          "Please select city, area and enter your complete delivery address."
+        );
+
+        document
+          .getElementById("addressSelector")
+          .classList.add("active");
+      }
+
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Order History - FoodieHub{% endblock %}
+{% block content %}
+<div class="page-banner">
+  <div class="container"><h1>📦 Order History</h1><p>{{ orders|length }} order(s) placed so far</p></div>
+</div>
+<div class="container">
+  {% if not orders %}
+    <div class="empty-state">
+      <div class="emoji">📦</div>
+      <h3>No orders yet</h3>
+      <p>Your placed orders will show up here.</p>
+      <a href="{{ url_for('home') }}" class="btn btn-primary">Start Ordering</a>
+    </div>
+  {% else %}
+    {% for order in orders %}
+    {% set status_class = {
+      'Order Placed': 'status-placed',
+      'Preparing': 'status-preparing',
+      'Out for Delivery': 'status-out',
+      'Delivered': 'status-delivered',
+      'Cancelled': 'status-cancelled'
+    } %}
+    <div class="order-card">
+      <div class="order-card-top">
+        <div>
+          <strong>Order #{{ '%04d'|format(order['id']) }}</strong>
+          <div style="font-size:0.8rem; color:#8a8a8a;">{{ order['order_date'] }}</div>
+        </div>
+        <span class="status-badge {{ status_class.get(order['status'], 'status-placed') }}">{{ order['status'] }}</span>
+      </div>
+      <div style="font-weight:600;">{{ order['restaurant_name'] }}</div>
+      <div class="order-card-bottom">
+        <strong>₹{{ '%.2f'|format(order['total_amount']) }}</strong>
+        <div style="display:flex; gap:10px;">
+          <a href="{{ url_for('order_detail', order_id=order['id']) }}" class="btn btn-outline btn-sm">View Details</a>
+          <form action="{{ url_for('reorder', order_id=order['id']) }}" method="POST">
+            <button type="submit" class="btn btn-primary btn-sm">Reorder</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}
