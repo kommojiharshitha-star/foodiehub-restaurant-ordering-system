@@ -1,8 +1,8 @@
 {# Expects: item (food row, may have restaurant_name) #}
 <div class="food-card" data-food-id="{{ item['id'] }}">
   <div class="img-wrap" onclick="window.location.href='{{ url_for('food_details', food_id=item['id']) }}'">
-    <img src="{{ item['image_url'] }}" alt="{{ item['name'] }}" loading="lazy"
-         onerror="this.onerror=null;this.src='https://loremflickr.com/480/360/food,dish';">
+            <img src="{{ item['image_url'] }}?lock={{ item['id'] }}" alt="{{ item['name'] }}" loading="lazy"
+              onerror="this.onerror=null;this.src='https://loremflickr.com/480/360/food,dish?lock={{ item.id }}';">
     <span class="food-type-badge {{ item['food_type'] }}" title="{{ item['food_type'] }}"></span>
   </div>
   <div class="body">
