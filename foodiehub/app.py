@@ -18,6 +18,9 @@ from recommendation import recommend_for_user, because_you_ordered, popular_near
 app = Flask(__name__)
 app.secret_key = os.environ.get("FOODIEHUB_SECRET_KEY", "dev-secret-key-change-in-production")
 
+# Gunicorn imports this module instead of running the __main__ block.
+init_db()
+
 DELIVERY_FEE = 40.0
 TAX_RATE = 0.05  # 5% GST-style tax on subtotal
 
