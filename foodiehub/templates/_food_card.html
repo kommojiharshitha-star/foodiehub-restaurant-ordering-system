@@ -1,8 +1,15 @@
 {# Expects: item (food row, may have restaurant_name) #}
+{% set food_images = [
+  'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=480&h=360&fit=crop',
+  'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=480&h=360&fit=crop',
+  'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=480&h=360&fit=crop',
+  'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=480&h=360&fit=crop',
+  'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=480&h=360&fit=crop',
+  'https://images.unsplash.com/photo-1550547660-d9450f859349?w=480&h=360&fit=crop'
+] %}
 <div class="food-card" data-food-id="{{ item['id'] }}">
   <div class="img-wrap" onclick="window.location.href='{{ url_for('food_details', food_id=item['id']) }}'">
-            <img src="{{ item['image_url'] }}?lock={{ item['id'] }}" alt="{{ item['name'] }}" loading="lazy"
-              onerror="this.onerror=null;this.src='https://loremflickr.com/480/360/food,dish?lock={{ item.id }}';">
+    <img src="{{ food_images[item['id'] % (food_images|length)] }}" alt="{{ item['name'] }}" loading="lazy">
     <span class="food-type-badge {{ item['food_type'] }}" title="{{ item['food_type'] }}"></span>
   </div>
   <div class="body">
